@@ -432,7 +432,7 @@
         "description": "Show notifications checkbox text."
     },
     "optionsCheckboxShowLoginNotifications": {
-        "message": "Show notification also when new credentials are detected.",
+        "message": "Show a notification when new credentials can be saved to the database.",
         "description": "Show login notifications checkbox text."
     },
     "optionsCheckboxAutoFillAndSend": {
@@ -512,7 +512,7 @@
         "description": "Autocomplete Usernames option help text."
     },
     "optionsShowNotificationsHelpText": {
-        "message": "Allow KeePassXC-Browser to show notifications about alerts and when user interaction is needed from the extension icon.",
+        "message": "Show notifications for errors and when user interaction is required.",
         "description": "Show notifications option help text."
     },
     "optionsAutoFillAndSendHelpText": {
