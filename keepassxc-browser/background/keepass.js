@@ -137,51 +137,58 @@ keepass.updateCredentials = function(callback, tab, entryId, username, password,
         page.tabs[tab.id].errorMessage = null;
     }
 
-    const kpAction = kpActions.SET_LOGIN;
-    const {dbid} = keepass.getCryptoKey();
-    const nonce = keepass.getNonce();
-    const incrementedNonce = keepass.incrementedNonce(nonce);
-
-    let messageData = {
-        action: kpAction,
-        id: dbid,
-        login: username,
-        password: password,
-        url: url,
-        submitUrl: url
-    };
-
-    if (entryId) {
-        messageData.uuid = entryId;
-    }
-
-    const request = {
-        action: kpAction,
-        message: keepass.encrypt(messageData, nonce),
-        nonce: nonce,
-        clientID: keepass.clientID,
-        triggerUnlock: 'true'
-    };
-
-    keepass.sendNativeMessage(request).then((response) => {
-        if (response.message && response.nonce) {
-            const res = keepass.decrypt(response.message, response.nonce);
-            if (!res) {
-                keepass.handleError(tab, kpErrors.CANNOT_DECRYPT_MESSAGE);
-                callback('error');
-                return;
-            }
-
-            const message = nacl.util.encodeUTF8(res);
-            const parsed = JSON.parse(message);
-            callback(keepass.verifyResponse(parsed, incrementedNonce) ? 'success' : 'error');
-        }
-        else if (response.error && response.errorCode) {
-            keepass.handleError(tab, response.errorCode, response.error);
-        }
-        else {
+    keepass.testAssociation((response) => {
+        if (!response) {
             browserAction.showDefault(null, tab);
+            callback([]);
+            return;
         }
+
+        const kpAction = kpActions.SET_LOGIN;
+        const {dbid} = keepass.getCryptoKey();
+        const nonce = keepass.getNonce();
+        const incrementedNonce = keepass.incrementedNonce(nonce);
+
+        let messageData = {
+            action: kpAction,
+            id: dbid,
+            login: username,
+            password: password,
+            url: url,
+            submitUrl: url
+        };
+
+        if (entryId) {
+            messageData.uuid = entryId;
+        }
+
+        const request = {
+            action: kpAction,
+            message: keepass.encrypt(messageData, nonce),
+            nonce: nonce,
+            clientID: keepass.clientID
+        };
+
+        keepass.sendNativeMessage(request).then((response) => {
+            if (response.message && response.nonce) {
+                const res = keepass.decrypt(response.message, response.nonce);
+                if (!res) {
+                    keepass.handleError(tab, kpErrors.CANNOT_DECRYPT_MESSAGE);
+                    callback('error');
+                    return;
+                }
+
+                const message = nacl.util.encodeUTF8(res);
+                const parsed = JSON.parse(message);
+                callback(keepass.verifyResponse(parsed, incrementedNonce) ? 'success' : 'error');
+            }
+            else if (response.error && response.errorCode) {
+                keepass.handleError(tab, response.errorCode, response.error);
+            }
+            else {
+                browserAction.showDefault(null, tab);
+            }
+        });
     });
 };
 
