@@ -70,6 +70,9 @@ browser.runtime.onMessage.addListener(function(req, sender, callback) {
                 cip.initCredentialFields(true);
             });
         }
+        else if (req.action === 'ignore-site') {
+            cip.ignoreSite(req.args);
+        }
     }
 });
 
@@ -1782,6 +1785,23 @@ cip.rememberCredentials = function(usernameValue, passwordValue) {
     return false;
 };
 
+cip.ignoreSite = function(sites) {
+    if (sites) {
+        const site = sites[0];
+        if (!cip.settings['ignoredSites']) {
+            cip.settings['ignoredSites'] = {};
+        }
+
+        cip.settings['ignoredSites'][site] = {
+            url: site
+        };
+
+        browser.runtime.sendMessage({
+            action: 'save_settings',
+            args: [cip.settings]
+        });
+    }
+};
 
 
 var cipEvents = {};

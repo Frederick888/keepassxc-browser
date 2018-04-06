@@ -11,6 +11,7 @@ $(function() {
             options.initGeneralSettings();
             options.initConnectedDatabases();
             options.initSpecifiedCredentialFields();
+            options.initIgnoredSites();
             options.initAbout();
         });
     });
@@ -253,6 +254,55 @@ options.initSpecifiedCredentialFields = function() {
     }
     else {
         $('#tab-specified-fields table tbody:first tr.empty:first').show();
+    }
+};
+
+options.initIgnoredSites = function() {
+    $('#dialogDeleteIgnoredSite').modal({keyboard: true, show: false, backdrop: true});
+    $('#tab-ignored-sites tr.clone:first button.delete:first').click(function(e) {
+        e.preventDefault();
+        $('#dialogDeleteIgnoredSite').data('url', $(this).closest('tr').data('url'));
+        $('#dialogDeleteIgnoredSite').data('tr-id', $(this).closest('tr').attr('id'));
+        $('#dialogDeleteIgnoredSite .modal-body:first strong:first').text($(this).closest('tr').children('td:first').text());
+        $('#dialogDeleteIgnoredSite').modal('show');
+    });
+
+    $('#dialogDeleteIgnoredSite .modal-footer:first button.yes:first').click(function(e) {
+        $('#dialogDeleteIgnoredSite').modal('hide');
+
+        const $url = $('#dialogDeleteIgnoredSite').data('url');
+        const $trId = $('#dialogDeleteIgnoredSite').data('tr-id');
+        $('#tab-ignored-sites #' + $trId).remove();
+
+        delete options.settings['ignoredSites'][$url];
+        options.saveSettings();
+
+        if ($('#tab-ignored-sites table tbody:first tr').length > 2) {
+            $('#tab-ignored-sites table tbody:first tr.empty:first').hide();
+        }
+        else {
+            $('#tab-ignored-sites table tbody:first tr.empty:first').show();
+        }
+    });
+
+    const $trClone = $('#tab-ignored-sites table tr.clone:first').clone(true);
+    $trClone.removeClass('clone');
+    let counter = 1;
+    for (let url in options.settings['ignoredSites']) {
+        const $tr = $trClone.clone(true);
+        $tr.data('url', url);
+        $tr.attr('id', 'tr-scf' + counter);
+        counter += 1;
+
+        $tr.children('td:first').text(url);
+        $('#tab-ignored-sites table tbody:first').append($tr);
+    }
+
+    if ($('#tab-ignored-sites table tbody:first tr').length > 2) {
+        $('#tab-ignored-sites table tbody:first tr.empty:first').hide();
+    }
+    else {
+        $('#tab-ignored-sites table tbody:first tr.empty:first').show();
     }
 };
 
