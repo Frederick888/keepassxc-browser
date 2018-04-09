@@ -1150,9 +1150,7 @@ observer.observe(document, {
     subtree: true,
     attributes: true,
     childList: true,
-    characterData: true,
-    attributeOldValue: true,
-    characterDataOldValue: true
+    characterData: true
 });
 
 var cip = {};
