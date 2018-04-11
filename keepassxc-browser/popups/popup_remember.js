@@ -24,6 +24,7 @@ function _initialize(tab) {
             action: 'add_credentials',
             args: [_tab.credentials.username, _tab.credentials.password, _tab.credentials.url]
         }).then(_verifyResult);
+        _close();
     });
 
     $('#btn-update').click(function(e) {
@@ -35,6 +36,7 @@ function _initialize(tab) {
                 action: 'update_credentials',
                 args: [_tab.credentials.list[0].uuid, _tab.credentials.username, _tab.credentials.password, _tab.credentials.url]
             }).then(_verifyResult);
+            _close();
         }
         else {
             $('.credentials:first .username-new:first strong:first').text(_tab.credentials.username);
