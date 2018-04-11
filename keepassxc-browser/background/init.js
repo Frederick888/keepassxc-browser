@@ -70,6 +70,7 @@ browser.tabs.onActivated.addListener((activeInfo) => {
  */
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === 'complete') {
+        browserAction.show(null, {'id': tabId});
         kpxcEvent.invoke(browserAction.removeRememberPopup, null, tabId, []);
     }
 });
